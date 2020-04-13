@@ -115,24 +115,49 @@ int main(int argc, char** argv)
   int *B=indata+(NI*NJ+NI*NK);
   int *C=indata+(NI*NJ+NI*NK+NK*NJ);
   int *D=indata+(NI*NJ+NI*NK+NK*NJ+NJ*NL);
-	p0 =(unsigned long long *) new((unsigned long long *)0xc0000000) unsigned long long[10];//Contro Port
+	p0 =(unsigned long long *) new((unsigned long long *)0xc0000000) unsigned long long[10]; //Contro Port
 	//printf("111111");
-    p0[1] = (unsigned long long)indata;//ReadBase
-	p0[2] = (unsigned long long)indata;//WriteBase
-	p0[0] = 81;	
-	p0[8] = 1;
-	p0[3] = 9;//CurrentThreadID
-	p0[4] = NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2;//Memory Range
+//     p0[1] = (unsigned long long)indata;//ReadBase
+// 	p0[2] = (unsigned long long)indata;//WriteBase
+// 	p0[0] = 81;	
+// 	p0[8] = 1;
+// 	p0[3] = 9;//CurrentThreadID
+// 	p0[4] = NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2;//Memory Range
+// 	p0[5] = 4;//MemorySize
+// 	p0[7] = 0;//Terminat
+//   /* Initialize array(s). */
+// 	p0[6]=0;p0[6]=0;
+//   init_array (ni, nj, nk, nl, indata);
+// p0[6]=1;
+//   /* Start timer. */
+//   polybench_start_instruments;
+
+//   while(p0[6]);
+// E = alpha*(A*B)*C+ beta*D
+// unit32_t size = NI*NJ(matrix_A_size)NI*NK((matrix_B_size)+NK*NJ((matrix_C_size)+NJ*NL(matrix_D_size)+NI*NL(outputmatrix_size) 
+
+  uint32_t size =512;
+	uint32_t pid = getpid()*getpid();
+	uint64_t r =0;
+	r=r|pid;
+	r=r<<32;
+	r=r|size;
+	p0[0] = r;
+	// p0[13] = 0; 	
+	printf("p00=%lu      pid=%lu    what=%d\n",p0[0],getpid()*getpid(), (p0[0] == getpid()*getpid()) );
+	while(p0[0] != getpid()*getpid()); // Wait for FPGA
+	p0[8] = 1;// Try to occupy the FPGA
+	p0[1] = (unsigned long long)number_array;//ReadBase
+	p0[2] = (unsigned long long)number_array;//WriteBase
+	p0[3] = getpid();//CurrentThreadID
+	p0[4] = 20;//Memory Range
 	p0[5] = 4;//MemorySize
 	p0[7] = 0;//Terminat
-  /* Initialize array(s). */
-	p0[6]=0;p0[6]=0;
-  init_array (ni, nj, nk, nl, indata);
-p0[6]=1;
-  /* Start timer. */
-  polybench_start_instruments;
+	//printf("22222");
+	p0[6] = 0;//RunState
+	p0[6]=1;s
+	while(p0[6]);
 
-  while(p0[6]);
   /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
