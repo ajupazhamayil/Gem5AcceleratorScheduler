@@ -57,6 +57,7 @@
 #include "cpu/simple/exec_context.hh"
 #include <string>
 #include <signal.h>
+#include "fpga-scheduler/fpgascheduler.hh"
 #define TEXT_SZ 100
 
 using namespace std;
@@ -65,6 +66,8 @@ class FpgaCPU : public BaseSimpleCPU
 {
 
   public:
+  
+  FPGAScheduler* scheduler;
 	
 	int noL1 = 0;
 
@@ -91,8 +94,6 @@ class FpgaCPU : public BaseSimpleCPU
     uint64_t outputArray[4096];
     uint64_t inputArray_last[4096];
     uint64_t outputArray_last[4096];
-    // Array to queue the TaskHashes which requests the FPGA
-    std::list< std::pair<uint64_t, uint64_t> > TaskHashes;
     uint64_t CurrentThreadID;
     uint64_t MemoryRange;
     uint64_t MemorySize;
@@ -578,7 +579,9 @@ class FpgaCPU : public BaseSimpleCPU
 	int Reconfigurable;	
 	Tick Reconfiguration_time;
 	void reconfiguration();
+  void scheduleProcesses();
 	EventWrapper<FpgaCPU, &FpgaCPU::reconfiguration> reconfigurationEvent;
+  EventWrapper<FpgaCPU, &FpgaCPU::scheduleProcesses> schedulerEvent;
 	int Protocol_shakehand;
 };
 

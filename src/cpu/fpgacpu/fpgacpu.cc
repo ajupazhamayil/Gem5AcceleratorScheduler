@@ -49,15 +49,7 @@ using namespace std;
 using namespace TheISA;
 
 
-void shortestJob(list<pair<uint64_t,uint64_t>> &TaskHashes)
-{ 
 
-  TaskHashes.sort([](pair<uint64_t,uint64_t> const& a, pair<uint64_t,uint64_t> const& b) {
-      return a.second < b.second;
-});
-
- 
-}
 // following part is for communication between two processes
 // ------------------------------------------------------------------------------------
 
@@ -97,7 +89,6 @@ void FpgaCPU::deleteShare()
 //----------------------------------------------------------------------------------------
 //The above part is for the communication between two processes
 
-
 void
 FpgaCPU::init()
 {
@@ -136,7 +127,7 @@ FpgaCPU::FpgaCPU(FpgaCPUParams *p)
       dcachePort(this), controlPort(this,p),dmaPort(this,p->system), ifetch_pkt(NULL), dcache_pkt(NULL),
       previousCycle(0),fetchEvent(this,false,-51), releaseEvent(this), dequeueEvent(this),baseaddress_control_fpga(p->baseaddress_control_fpga),size_control_fpga(p->size_control_fpga),
 	  moduleName(p->ModuleName),show_address(p->show_address),dma_available(p->dma_available),dma_size(p->dma_size),ACP(p->ACP),Reconfigurable(p->Reconfigurable),
-	  Reconfiguration_time(p->Reconfiguration_time),reconfigurationEvent(this),Protocol_shakehand(p->Protocol_shakehand)
+	  Reconfiguration_time(p->Reconfiguration_time),reconfigurationEvent(this),schedulerEvent(this),Protocol_shakehand(p->Protocol_shakehand),scheduler(p->scheduler_object)
 	  
 {
     _status = Idle;
@@ -148,12 +139,14 @@ FpgaCPU::FpgaCPU(FpgaCPUParams *p)
 	dma_read_begin=0;
 	already_reset=0;
 	configured=0;
+    scheduler->setCPU(this);
+    panic_if(!scheduler, "FpgaCPuObject must have a non-null schedulerObject");
 	if (dma_available)
 	{	
 		//now the size of DMA can be set by register in the function setFPGAReg()
 	 	//fpgadma = new FPGADma(this,dmaPort, MemoryRange*MemorySize, 64, 8,Request::UNCACHEABLE);
 	}
-
+    // Initial address is setting with value 0
     memset(inputArray,0,sizeof(inputArray));
     memset(outputArray,0,sizeof(outputArray));
 }
@@ -161,7 +154,8 @@ FpgaCPU::FpgaCPU(FpgaCPUParams *p)
 void
 FpgaCPU::reconfiguration()
 {
-	activateContext(0);
+    schedule(schedulerEvent, curTick()+scheduler->getLatency());
+	// activateContext(0);
 }
 
 FpgaCPU::~FpgaCPU()
@@ -249,7 +243,7 @@ FpgaCPU::switchOut()
     SimpleExecContext& t_info = *threadInfo[curThread];
     M5_VAR_USED SimpleThread* thread = t_info.thread;
     BaseSimpleCPU::switchOut();
-
+    DPRINTF(Accel, "Swithich out \n");
     assert(!fetchEvent.scheduled());
     assert(_status == BaseSimpleCPU::Running || _status == Idle);
     assert(!t_info.stayAtPC);
@@ -392,7 +386,8 @@ FpgaCPU::suspendContext(ThreadID thread_num)
             deschedule(fetchEvent);
         }
     }
-
+    // Checking wheteher they are suspended or not
+    // then make the cpu in lowpowermode.
     BaseCPU::suspendContext(thread_num);
 }
 
@@ -560,6 +555,7 @@ Fault
 FpgaCPU::initiateMemRead(Addr addr, unsigned size,
                           Request::Flags flags)
 {
+    DPRINTF(Accel, "Inside initiateMemRead function \n");
     Fault fault;
     const int asid = 0;
     ThreadID tid = CurrentThreadID;
@@ -765,21 +761,28 @@ FpgaCPU::fetch()  //FPGACPU-special==========================actually FPGA has n
             shared->text[num_input_fpga+num_output_fpga] = 10101;
 			shared->written = 1;
 			_status = Idle;
+            DPRINTF(Accel, "Is this the last?\n");
 		//	exitSimLoop("as the end of simulation, FPGA is terminated. exit()\n");
 			return;
         }
 	else shared->text[num_input_fpga+num_output_fpga] = 0;
-	if (kill(fpid,0)<0)
-		exitSimLoop("The process of FPGA is terminated unexceptedly\n");
+	if (kill(fpid,0)<0){
+		exitSimLoop("The process of FPGA is terminated unexceptedly\n", clockEdge(Cycles(1)));
+		DPRINTF(Accel, "Did not exit\n");
+	}
    	schedule(fetchEvent, clockEdge(Cycles(1)));// insert another procedure of fetch at next cycle.
 	if (dma_available)
 	{
 		if (dma_write_begin&&fpgadma->all_done)
 			dma_write_done=1;
 	}
-    if (_status == Idle)
+    if (_status == Idle){
+        DPRINTF(SimpleCPU, "At status=Idle?\n");
+        return;}
+	if (!OccupyFPGA) {
+        DPRINTF(SimpleCPU, "At not occupyFPGA ?\n"); 
         return;
-	if (!OccupyFPGA) {return;}
+        }
 
     InputChanged = 0;
     OutputChanged = 0;
@@ -885,6 +888,7 @@ FpgaCPU::fetch()  //FPGACPU-special==========================actually FPGA has n
         inputArray[bit_WriteReady] = 0;
         WriteReady = 0;
     }
+    // DPRINTF(Accel, "At the end of fetch\n");
 }
 
 
@@ -1425,7 +1429,7 @@ void
 FpgaCPU::dequeue()
 {
     assert(!packetQueue.empty());
-    // DPRINTF(Accel, "Trying to dequeue \n");
+    // DPRINTF(SimpleCPU, "Trying to dequeue \n");
     DeferredPacket deferred_pkt = packetQueue.front();
 
     retryResp = !controlPort.sendTimingResp(deferred_pkt.pkt);
@@ -1493,6 +1497,8 @@ FpgaCPU::setFPGAReg(uint64_t regid, uint64_t val, PacketPtr pkt)
             uint64_t size = val<<32;
             size = size>>32;
             val = tempval;
+            DPRINTF(Accel, "size is %lu \n", size);
+            scheduler->insertProcess(val, size);
                         if (!TaskHash&&val) {
                             TaskHash=val;
                             printf("FPGA occupied by TaskHash %lu\n",val);
@@ -1500,11 +1506,9 @@ FpgaCPU::setFPGAReg(uint64_t regid, uint64_t val, PacketPtr pkt)
                         else {
                             DPRINTF(Accel, "***********************Instead of rejecting Let %lu wait with size %lu (Ajumal)\n"
                             , val, size);
-                            TaskHashes.push_back(make_pair(val, size));
-                            shortestJob(TaskHashes);
-                            for (auto it:TaskHashes){
-                                cout<<it.first<<"  "<<it.second<<endl;
-                            }
+                            // scheduler->insertProcess(val, size);
+                            // Just making some ticks
+                            // scheduler->scheduleEvent();
                             // TaskHashes = sort
                             // printf("Reject FPGA TaskHash id %lu, currently FPGA occupied by TaskHash %lu\n",val, TaskHash);
                         }
@@ -1532,13 +1536,9 @@ FpgaCPU::setFPGAReg(uint64_t regid, uint64_t val, PacketPtr pkt)
 		case 8: {
             OccupyFPGA = val;
             printf("occupy and configure FPGA with bitstream %lu\n",val);
-            DPRINTF(Accel, "\n isTaskHashesEmpty=%d    oldTH=%lu  newTH=%lu CurrVal@Reg8=%lu\n", 
-            TaskHashes.empty(), TaskHash, TaskHashes.front().first, val);
-            if (val == 0 && !TaskHashes.empty()){
-                // while(TaskHash);
-                uint64_t temp=TaskHashes.front().first;
+            if (val == 0 && !scheduler->is_TaskHashesEmpty()){
+                uint64_t temp=scheduler->popProcess();
                 printf("FPGA occupied by TaskHash %lu from TaskHashes list \n",temp);
-                TaskHashes.pop_front();
                 TaskHash = temp;
             }
             break;
@@ -1558,13 +1558,29 @@ FpgaCPU::setFPGAReg(uint64_t regid, uint64_t val, PacketPtr pkt)
 	}	
 	if (/*_status == BaseSimpleCPU::Idle || */(OccupyFPGA>0&&regid==8))
 	{
-		if (fetchEvent.scheduled()) deschedule(fetchEvent);
+		if (fetchEvent.scheduled()) {
+            DPRINTF(Accel, "Descheduling the fetchevent \n");
+            deschedule(fetchEvent);
+        }
 		configuration_finished=0;
-		if (!Reconfigurable)
-			activateContext(0);
-		else
-			schedule(reconfigurationEvent, curTick()+Reconfiguration_time);
+		if (!Reconfigurable){
+            DPRINTF(Accel, "Not reconfigurable \n");
+            schedule(schedulerEvent, curTick()+scheduler->getLatency());
+            // activateContext(0);
+        }
+		else{
+            DPRINTF(Accel, "Reconfigurable \n");
+            schedule(reconfigurationEvent, curTick()+Reconfiguration_time);
+        }
 	}
+}
+
+void
+FpgaCPU::scheduleProcesses()
+{
+    scheduler->deleteProcess();
+    DPRINTF(Accel, "Activating the thread context \n");
+    activateContext(0);
 }
 
 uint64_t

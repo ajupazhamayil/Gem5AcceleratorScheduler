@@ -2,7 +2,8 @@ build/*
 m5out/*
 m5out
 *.pyc
+parsetab.py
 .vscode
 a.out
 parsetab.py
-
+*.out
