@@ -156,6 +156,7 @@ int main(int argc, char** argv)
 	//printf("22222");
 	p0[6] = 0;//RunState
 	p0[6]=1;
+  init_array (ni, nj, nk, nl, indata);
 	while(p0[6]);
 
   /* Stop and print timer. */

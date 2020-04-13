@@ -87,28 +87,54 @@ int main(int argc, char** argv)
   /* Variable declaration/allocation. */
   POLYBENCH_2D_ARRAY_DECL(path, DATA_TYPE, N, N, n, n);
 	p0 =(unsigned long long *) new((unsigned long long *)0xc0000000) unsigned long long[10];//Contro Port
-	//printf("111111");
-    p0[1] = (unsigned long long)path;//ReadBase
+// 	//printf("111111");
+//     p0[1] = (unsigned long long)path;//ReadBase
+// 	p0[2] = (unsigned long long)path;//WriteBase
+// 	p0[0] = 81;	
+// 	p0[8] = 1;
+// 	p0[3] = 9;//CurrentThreadID
+// 	p0[4] = 64*64;//Memory Range
+// 	p0[5] = 4;//MemorySize
+// 	p0[7] = 0;//Terminat
+
+//   /* Initialize array(s). */
+//   init_array (n, POLYBENCH_ARRAY(path));
+
+//   /* Start timer. */
+//   polybench_start_instruments;
+// /*  int b[512*1024/4];
+//   int pp;
+//   for (pp=0;pp<512*1024/4;pp++)
+// 	b[pp]=pp;*/
+//   /* Run kernel. */
+//   //kernel_floyd_warshall ( POLYBENCH_ARRAY(path));
+//   p0[6]=0;p0[6]=1;while(p0[6]);
+
+  uint32_t size = 500;
+	uint32_t pid = getpid()*getpid();
+	uint64_t r =0;
+	r=r| pid;
+	r=r<<32;
+	r=r|size;
+	p0[0] = r;
+	// p0[13] = 0; 	
+	printf("p00=%lu      pid=%lu    what=%d\n",p0[0],getpid()*getpid(), (p0[0] == getpid()*getpid()) );
+	while(p0[0] != getpid()*getpid()); // Wait for FPGA
+	p0[8] = 1;// Try to occupy the FPGA
+	p0[1] = (unsigned long long)path;//ReadBase
 	p0[2] = (unsigned long long)path;//WriteBase
-	p0[0] = 81;	
-	p0[8] = 1;
-	p0[3] = 9;//CurrentThreadID
+	p0[3] = getpid();//CurrentThreadID
 	p0[4] = 64*64;//Memory Range
 	p0[5] = 4;//MemorySize
 	p0[7] = 0;//Terminat
-
-  /* Initialize array(s). */
+	//printf("22222");
+   /* Initialize array(s). */
   init_array (n, POLYBENCH_ARRAY(path));
 
-  /* Start timer. */
   polybench_start_instruments;
-/*  int b[512*1024/4];
-  int pp;
-  for (pp=0;pp<512*1024/4;pp++)
-	b[pp]=pp;*/
-  /* Run kernel. */
-  //kernel_floyd_warshall ( POLYBENCH_ARRAY(path));
-  p0[6]=0;p0[6]=1;while(p0[6]);
+	p0[6] = 0;//RunState
+	p0[6]=1;
+	while(p0[6]);
   /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
