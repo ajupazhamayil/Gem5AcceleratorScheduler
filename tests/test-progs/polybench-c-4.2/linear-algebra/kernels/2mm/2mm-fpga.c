@@ -147,15 +147,15 @@ int main(int argc, char** argv)
 	printf("p00=%lu      pid=%lu    what=%d\n",p0[0],getpid()*getpid(), (p0[0] == getpid()*getpid()) );
 	while(p0[0] != getpid()*getpid()); // Wait for FPGA
 	p0[8] = 1;// Try to occupy the FPGA
-	p0[1] = (unsigned long long)number_array;//ReadBase
-	p0[2] = (unsigned long long)number_array;//WriteBase
+	p0[1] = (unsigned long long)indata;//ReadBase
+	p0[2] = (unsigned long long)indata;//WriteBase
 	p0[3] = getpid();//CurrentThreadID
-	p0[4] = 20;//Memory Range
+	p0[4] = NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2;
 	p0[5] = 4;//MemorySize
 	p0[7] = 0;//Terminat
 	//printf("22222");
 	p0[6] = 0;//RunState
-	p0[6]=1;s
+	p0[6]=1;
 	while(p0[6]);
 
   /* Stop and print timer. */
