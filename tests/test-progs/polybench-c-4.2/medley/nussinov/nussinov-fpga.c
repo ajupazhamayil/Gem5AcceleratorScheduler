@@ -118,33 +118,64 @@ int main()
   /* Initialize array(s). */
   init_array (table);
   /* Start timer. */
-  //polybench_start_instruments;
+  polybench_start_instruments;
 		//printf("111111");
-	p0[0] = 0;
- p0[6]=0;
-    p0[1] = (unsigned long long)&table;//ReadBase
+// 	p0[0] = 0;
+//  p0[6]=0;
+//     p0[1] = (unsigned long long)&table;//ReadBase
+// 	p0[2] = (unsigned long long)&table;//WriteBase
+// 	p0[0] = 81;	
+// 	p0[8] = 1;
+// 	p0[3] = 9;//CurrentThreadID
+// 	p0[4] = (N+1)*(N+1);//Memory Range
+// 	p0[5] = 4;//MemorySize
+// 	p0[7] = 0;//Terminat
+//   /* Run kernel. */
+//  // kernel_nussinov (table);
+//   int b[512*1024/4];
+//   int pp;
+// /*  for (pp=0;pp<512*1024/4;pp++)
+// 	b[pp]=pp;*/
+//  p0[6]=0;p0[6]=1;while(p0[6]);
+
+
+
+uint32_t size =512;
+	uint32_t pid = getpid()*getpid();
+	uint64_t r =0;
+	r=r|pid;
+	r=r<<32;
+	r=r|size;
+	p0[0] = r;
+	// p0[13] = 0; 	
+	printf("p00=%lu      pid=%lu    what=%d\n",p0[0],getpid()*getpid(), (p0[0] == getpid()*getpid()) );
+	while(p0[0] != getpid()*getpid()); // Wait for FPGA
+	p0[8] = 1;// Try to occupy the FPGA
+	p0[1] = (unsigned long long)&table;//ReadBase
 	p0[2] = (unsigned long long)&table;//WriteBase
-	p0[0] = 81;	
-	p0[8] = 1;
-	p0[3] = 9;//CurrentThreadID
-	p0[4] = (N+1)*(N+1);//Memory Range
+	p0[3] = getpid();//CurrentThreadID
+	p0[4] = (N+1)*(N+1);
 	p0[5] = 4;//MemorySize
 	p0[7] = 0;//Terminat
-  /* Run kernel. */
- // kernel_nussinov (table);
-  int b[512*1024/4];
-  int pp;
-/*  for (pp=0;pp<512*1024/4;pp++)
-	b[pp]=pp;*/
- p0[6]=0;p0[6]=1;while(p0[6]);
+	//printf("22222");
+   int b[512*1024/4];
+   int pp;
+
+	p0[6] = 0;//RunState
+	p0[6]=1;
+ 
+	while(p0[6]);
+
+
+
   /* Stop and print timer. */
- // polybench_stop_instruments;
+  polybench_stop_instruments;
   //polybench_print_instruments;
 
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
 	
-//  print_array(n, table);
+  print_array(n, table);
 
   /* Be clean. */
  // POLYBENCH_FREE_ARRAY(seq);
