@@ -41,6 +41,14 @@ process1.pid = 1100;
 process1.cmd = ['tests/test-progs/polybench-c-4.2/linear-algebra/kernels/2mm/2mm']
 # 'tests/test-progs/polybench-c-4.2/2mm-fpga']
 
+process2 = LiveProcess()
+process2.pid = 1101;
+process2.cmd = ['tests/test-progs/polybench-c-4.2/linear-algebra/kernels/2mm/2mm']
+
+process3 = LiveProcess()
+process3.pid = 1103;
+process3.cmd = ['tests/test-progs/polybench-c-4.2/linear-algebra/kernels/2mm/2mm']
+
 (CPUClass, test_mem_mode, FutureClass) = Simulation.setCPUClass(options)
 CPUClass.numThreads = numThreads
 
@@ -72,6 +80,15 @@ system.fpga[0].ModuleName = '2mm/obj_dir/Vour'
 
 system.cpu[0].workload = process1
 system.cpu[0].createThreads()
+
+if np>1:
+    system.cpu[1].workload = process2
+    system.cpu[1].createThreads()
+
+if np>2:
+    system.cpu[2].workload = process3
+    system.cpu[2].createThreads()
+
 system.piobus = IOXBar()
 
 if options.ruby:
