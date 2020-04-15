@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+#include <stdint.h>
 
 /* Include polybench common header. */
 #include "../../utilities/polybench.h"
@@ -146,5 +147,6 @@ int main(int argc, char** argv)
   /* Be clean. */
   //POLYBENCH_FREE_ARRAY(path);
 
+  p0[8] = 0;
   return 0;
 }
