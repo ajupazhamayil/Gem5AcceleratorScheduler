@@ -63,6 +63,9 @@ FPGAScheduler::is_TaskHashesEmpty()
 Tick 
 FPGAScheduler::getLatency()
 {
+    uint64_t size = this->TaskHashes.size();
+    this->latency = size*size;
+    DPRINTF(FPGAScheduler, "Scheduling latency is %lu ticks (ps)\n", this->latency);
     return this->latency;
 }
 
