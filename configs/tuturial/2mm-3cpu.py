@@ -38,16 +38,16 @@ numThreads = 1
 
 process1 = LiveProcess()
 process1.pid = 1100;
-process1.cmd = ['tests/test-progs/polybench-c-4.2/linear-algebra/kernels/2mm/2mm']
-# 'tests/test-progs/polybench-c-4.2/2mm-fpga']
+process1.cmd = ['tests/test-progs/polybench-c-4.2/2mm1']
+# 'tests/test-progs/polybench-c-4.2/2mm1-fpga']
 
 process2 = LiveProcess()
 process2.pid = 1101;
-process2.cmd = ['tests/test-progs/polybench-c-4.2/linear-algebra/kernels/2mm/2mm']
+process2.cmd = ['tests/test-progs/polybench-c-4.2/2mm2']
 
 process3 = LiveProcess()
 process3.pid = 1103;
-process3.cmd = ['tests/test-progs/polybench-c-4.2/linear-algebra/kernels/2mm/2mm']
+process3.cmd = ['tests/test-progs/polybench-c-4.2/2mm3']
 
 (CPUClass, test_mem_mode, FutureClass) = Simulation.setCPUClass(options)
 CPUClass.numThreads = numThreads

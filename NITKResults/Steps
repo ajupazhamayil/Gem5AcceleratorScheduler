@@ -1,0 +1,7 @@
+1. Make 3 g++ executable
+g++ -I utilities -I linear-algebra/kernels/atax utilities/polybench.c linear-algebra/kernels/atax/atax.c -o atax_base
+2. Make 1 python config with those 3 executables as workload for 3 cpus
+3. Run 1 time with 3 cpus
+4. Copy python config file outside the folder and delete the sheduler object from the file
+
+4. git checkout 0bdac322ac339e8849cf819a536bbfa3e64dcc6d
