@@ -1,9 +1,9 @@
 gem5 Simulator System.  http://gem5.org
 gem5 is copyrighted software; use the --copyright option for details.
 
-gem5 compiled Apr 16 2020 15:28:47
-gem5 started Apr 18 2020 14:07:42
-gem5 executing on gem5lab-VirtualBox, pid 2003
+gem5 compiled Apr 18 2020 17:54:50
+gem5 started Apr 18 2020 18:04:11
+gem5 executing on gem5lab-VirtualBox, pid 14327
 command line: ./build/X86/gem5.opt configs/tuturial/2mm-3cpu.py --ruby --num-cpus=3 --num-fpgas=1
 
 4
@@ -18,18 +18,18 @@ p00=1216609      pid=1216609    what=0
 FPGA occupied by TaskHash 1216609
 occupy and configure FPGA with bitstream 1
 FpgaCPU--configuring
-Memory attached at 7FF83D7A1000
+Memory attached at 7FA21CA0F000
 2mm/obj_dir/Vour is configured on FPGA.
-Memory attached at 7FF83D7A1000
+Memory attached at 7FA21CA0F000
 Reset FPGA @ tick 216762000
 FPGA released from TaskHash 1216609
 occupy and configure FPGA with bitstream 0
 FPGA occupied by TaskHash 1210000 from TaskHashes list 
 occupy and configure FPGA with bitstream 1
 FpgaCPU--configuring
-ppid = 2003
+ppid = 14327
 
-Memory attached at 7F8BC2DF6000
+Memory attached at 7FE47B635000
 /gem5Built/Gem5AcceleratorScheduler
 FPGA read:------------
          0          0          0          0
@@ -38,19 +38,19 @@ time2:                99290
          0          0          0          0
 time3:               100581
 wipe the FPGA successfully.
-Memory attached at 7FF83D7A1000
+Memory attached at 7FA21CA0F000
 2mm/obj_dir/Vour is configured on FPGA.
 wipe the FPGA successfully.
-Memory attached at 7FF83D7A1000
+Memory attached at 7FA21CA0F000
 Reset FPGA @ tick 552682000
 FPGA released from TaskHash 1210000
 occupy and configure FPGA with bitstream 0
 FPGA occupied by TaskHash 1212201 from TaskHashes list 
 occupy and configure FPGA with bitstream 1
 FpgaCPU--configuring
-ppid = 2003
+ppid = 14327
 
-Memory attached at 7FB650DED000
+Memory attached at 7FDF236F8000
 /gem5Built/Gem5AcceleratorScheduler
 FPGA read:------------
          0          0          0          0
@@ -59,17 +59,17 @@ time2:                97790
          0          0          0          0
 time3:                97883
 wipe the FPGA successfully.
-Memory attached at 7FF83D7A1000
+Memory attached at 7FA21CA0F000
 2mm/obj_dir/Vour is configured on FPGA.
 wipe the FPGA successfully.
-Memory attached at 7FF83D7A1000
+Memory attached at 7FA21CA0F000
 Reset FPGA @ tick 879618000
 FPGA released from TaskHash 1212201
 occupy and configure FPGA with bitstream 0
 Exiting @ tick 1211263000 because target called exit()
-ppid = 2003
+ppid = 14327
 
-Memory attached at 7F3DBF9A5000
+Memory attached at 7F7224903000
 /gem5Built/Gem5AcceleratorScheduler
 FPGA read:------------
          0          0          0          0

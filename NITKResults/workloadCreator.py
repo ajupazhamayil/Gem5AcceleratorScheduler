@@ -12,7 +12,7 @@ cwd = os.getcwd()
 print "Current director is "+cwd+"\n"
 
 for i in range(1,4):
-    cmd = "g++ -I utilities -I {}{} utilities/polybench.c {}{}/{}{}.c -o {}{}" \
+    cmd = "g++ -I utilities -I {}{} utilities/polybench.c {}{}/{}{}-fpga.c -o {}{}" \
         .format(folder_path, i, folder_path, i, file_name, i, file_name, i)
     print cmd+"\n"
     os.system(cmd)
