@@ -4,7 +4,9 @@ folder_path = "linear-algebra/kernels/2mm"
 file_name = "2mm"
 
 polybench = "tests/test-progs/polybench-c-4.2"
-os.chdir('Gem5AcceleratorScheduler/{}').format(polybench)
+cmd = 'Gem5AcceleratorScheduler/{}'.format(polybench)
+print cmd
+os.chdir(cmd)
 cwd = os.getcwd() 
 print "Current director is "+cwd+"\n"
 
@@ -21,8 +23,8 @@ print "Done making workload \n"
 
 
 print "Making the python config file \n"
-os.chdir("/home/gem5lab/Gem5/Gem5AcceleratorScheduler/ \
-    configs/tuturial")  
+os.chdir("/home/gem5lab/Gem5/Gem5AcceleratorScheduler/\
+configs/tuturial")  
 cwd = os.getcwd() 
 print "Current director is "+cwd+"\n"
 
