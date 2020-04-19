@@ -2,7 +2,7 @@
 #include "fpga-scheduler/fpgascheduler.hh"
 
 FPGAScheduler::FPGAScheduler(FPGASchedulerParams *params) :
-    SimObject(params), latency(params->time_to_process)
+    SimObject(params), policy_num(params->policy)//latency(params->time_to_process)
 {
     DPRINTF(FPGAScheduler, "Created the FPGAScheduler object\n");
 }
@@ -29,6 +29,16 @@ FPGAScheduler::shortestJobFirst()
 }
 
 void
+FPGAScheduler::longestJobFirst()
+{ 
+
+  TaskHashes.sort([](pair<uint64_t,uint64_t> const& a, pair<uint64_t,uint64_t> const& b) {
+      return a.second > b.second;
+  });
+
+}
+
+void
 FPGAScheduler::insertProcess(uint64_t val, uint64_t size)
 {
     TaskHashes.push_back(make_pair(val, size));
@@ -40,7 +50,12 @@ FPGAScheduler::insertProcess(uint64_t val, uint64_t size)
 
 uint64_t FPGAScheduler::popProcess()
 {
-    this->shortestJobFirst();
+    switch(policy_num){
+        case 1: this->shortestJobFirst(); DPRINTF(FPGAScheduler, "shortestJobFirst"); break;
+        case 2: this->longestJobFirst(); DPRINTF(FPGAScheduler, "longestJobFirst"); break;
+        default: DPRINTF(FPGAScheduler, "shortestJobFirst"); break;
+    }
+    
     DPRINTF(FPGAScheduler, "\n isTaskHashesEmpty=%d    currentFront=%lu \n", 
     TaskHashes.empty(), TaskHashes.front().first);
     uint64_t hash = TaskHashes.front().first;

@@ -38,13 +38,16 @@ numThreads = 1
 
 process1 = LiveProcess()
 process1.pid = 1100;
-process1.cmd = ['tests/test-progs/polybench-c-4.2/2mm1']
+process1.cmd = ['tests/test-progs/polybench-c-4.2/2mm0']
 process2 = LiveProcess()
-process2.pid = 1101;
+process2.pid = 1102;
 process2.cmd = ['tests/test-progs/polybench-c-4.2/2mm2']
 process3 = LiveProcess()
 process3.pid = 1103;
-process3.cmd = ['tests/test-progs/polybench-c-4.2/2mm3']
+process3.cmd = ['tests/test-progs/polybench-c-4.2/2mm1']
+process4 = LiveProcess()
+process4.pid = 1104;
+process4.cmd = ['tests/test-progs/polybench-c-4.2/2mm3']
 # 'tests/test-progs/polybench-c-4.2/2mm-fpga']
 
 (CPUClass, test_mem_mode, FutureClass) = Simulation.setCPUClass(options)
@@ -58,7 +61,7 @@ system = System(cpu = [DerivO3CPU() for i in xrange(np)],
                 cache_line_size = 64)
 
 system.fpga = [FpgaCPU() for i in xrange(options.num_fpgas)]
-system.fpga[0].scheduler_object = FPGAScheduler(time_to_process = '1ps')
+system.fpga[0].scheduler_object = FPGAScheduler(policy = 0)
 system.voltage_domain = VoltageDomain(voltage = options.sys_voltage)
 system.clk_domain = SrcClockDomain(clock =  options.sys_clock,
                              voltage_domain = system.voltage_domain)
@@ -83,9 +86,15 @@ if np>1:
 	system.cpu[1].workload = process2
 	system.cpu[1].createThreads()
 
+
 if np>2:
 	system.cpu[2].workload = process3
-	system.cpu[2].createThreads())
+	system.cpu[2].createThreads()
+
+
+if np>3:
+	system.cpu[3].workload = process4
+	system.cpu[3].createThreads()
 
 system.piobus = IOXBar()
 

@@ -18,10 +18,12 @@ class FPGAScheduler : public SimObject
     void insertProcess(uint64_t, uint64_t);
     // TODO More scheduling algorithms
     void shortestJobFirst();
+    void longestJobFirst();
     void setCPU(FpgaCPU *_cpu);
     bool is_TaskHashesEmpty();
     // inProcTime+sorting+outProcTime
     Tick latency;
+    uint64_t policy_num;
     FPGAScheduler(FPGASchedulerParams *p);
     void startup();
 };

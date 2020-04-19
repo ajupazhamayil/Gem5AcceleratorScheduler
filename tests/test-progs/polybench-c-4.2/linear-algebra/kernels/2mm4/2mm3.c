@@ -13,16 +13,13 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
-#include <stdint.h>
 
 /* Include polybench common header. */
 #include "../../../utilities/polybench.h"
 
 /* Include benchmark-specific header. */
-#include "2mm1.h"
-#include<new>
-using namespace std;
-unsigned long long *p0;
+#include "2mm3.h"
+
 
 /* Array initialization. */
 static
@@ -37,11 +34,8 @@ void init_array(int ni, int nj, int nk, int nl,
   int *D=indata+(NI*NJ+NI*NK+NK*NJ+NJ*NL);
   int* alpha=indata+NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL;
   int* beta=indata+NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+1;
-  *alpha = 2;
-  *beta = 3;
-  for (i = 0; i < ni; i++)
-    for (j = 0; j < nj; j++)
-      tmp[i*NJ+j] = 0;
+  *alpha = 1;
+  *beta = 1;
   for (i = 0; i < ni; i++)
     for (j = 0; j < nk; j++)
       A[i*NK+j] = (DATA_TYPE) ((i*j+1) % ni);
@@ -76,28 +70,42 @@ void print_array(int ni, int nl,
   POLYBENCH_DUMP_FINISH;
 }
 
-
-int mulD(int a,int b)
-{
-	int tmp;
-//#pragma HLS RESOURCE variable=tmp core=Mul
-	tmp=a*b;
-	return tmp;
-}
-
-int addD(int a,int b)
-{
-	int tmp;
-//#pragma HLS RESOURCE variable=tmp core=AddSub
-	tmp=a+b;
-	return tmp;
-}
-
 /* Main computational kernel. The whole function will be timed,
    including the call and return. */
 //static
+void kernel_2mm(int indata[NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2])
+{
+  int i, j, k;
+  int ni=NI, nj=NJ,  nk=NK,  nl=NL;
+  int (*tmp)=(indata);
+  int (*A)=(indata+(NI*NJ));
+  int (*B)=(indata+(NI*NJ+NI*NK));
+  int (*C)=(indata+(NI*NJ+NI*NK+NK*NJ));
+  int (*D)=(indata+(NI*NJ+NI*NK+NK*NJ+NJ*NL));
+  int alpha=*(indata+NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL);
+  int beta=*(indata+NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+1);
 
-  int indata[NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2];
+  /* D := alpha*A*B*C + beta*D */
+  for (i = 0; i < _PB_NI; i++)
+    kernel_2mm_label5:for (j = 0; j < _PB_NJ; j++)
+      {
+	tmp[i*NJ+j] = 0;
+	kernel_2mm_label0:for (k = 0; k < _PB_NK; ++k)
+		//tmp[i][j] = addD(tmp[i][j],mulD(alpha,mulD(A[i][k], B[k][j])));
+	  tmp[i*NJ+j] = tmp[i*NJ+j] + alpha * A[i*NK+k] * B[k*NJ+j];
+      }
+  for (i = 0; i < _PB_NI; i++)
+    kernel_2mm_label7:for (j = 0; j < _PB_NL; j++)
+      {
+	D[i*NL+j] *=beta;
+	kernel_2mm_label4:for (k = 0; k < _PB_NJ; ++k)
+		D[i*NL+j]+=tmp[i*NJ+k]* C[k*NL+j];
+	//  D[i][j] = addD(D[i][j], mulD(tmp[i][k], C[k][j]));
+      }
+
+}
+
+int indata[NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2];
 
 int main(int argc, char** argv)
 {
@@ -116,65 +124,30 @@ int main(int argc, char** argv)
   int *B=indata+(NI*NJ+NI*NK);
   int *C=indata+(NI*NJ+NI*NK+NK*NJ);
   int *D=indata+(NI*NJ+NI*NK+NK*NJ+NJ*NL);
-	p0 =(unsigned long long *) new((unsigned long long *)0xc0000000) unsigned long long[10]; //Contro Port
-	//printf("111111");
-//     p0[1] = (unsigned long long)indata;//ReadBase
-// 	p0[2] = (unsigned long long)indata;//WriteBase
-// 	p0[0] = 81;	
-// 	p0[8] = 1;
-// 	p0[3] = 9;//CurrentThreadID
-// 	p0[4] = NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2;//Memory Range
-// 	p0[5] = 4;//MemorySize
-// 	p0[7] = 0;//Terminat
-//   /* Initialize array(s). */
-// 	p0[6]=0;p0[6]=0;
-//   init_array (ni, nj, nk, nl, indata);
-// p0[6]=1;
-//   /* Start timer. */
-//   polybench_start_instruments;
-
-//   while(p0[6]);
-// E = alpha*(A*B)*C+ beta*D
-// unit32_t size = NI*NJ(matrix_A_size)NI*NK((matrix_B_size)+NK*NJ((matrix_C_size)+NJ*NL(matrix_D_size)+NI*NL(outputmatrix_size) 
-
-    uint32_t size =NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL;
-	uint32_t pid = getpid()*getpid();
-	uint64_t r =0;
-	r=r|pid;
-	r=r<<32;
-	r=r|size;
-	p0[0] = r;
-	// p0[13] = 0; 	
-	printf("p00=%lu      pid=%lu    what=%d\n",p0[0],getpid()*getpid(), (p0[0] == getpid()*getpid()) );
-	while(p0[0] != getpid()*getpid()); // Wait for FPGA
-	p0[8] = 1;// Try to occupy the FPGA
-	p0[1] = (unsigned long long)indata;//ReadBase
-	p0[2] = (unsigned long long)indata;//WriteBase
-	p0[3] = getpid();//CurrentThreadID
-	p0[4] = NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2;
-  printf("\n\n\n\n %lu \n\n\n\n\n\n", NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2);
-	p0[5] = 4;//MemorySize
-	p0[7] = 0;//Terminat
-	//printf("22222");
-	p0[6] = 0;//RunState
-	p0[6]=1;
+  /* Initialize array(s). */
   init_array (ni, nj, nk, nl, indata);
-	while(p0[6]);
+
+  /* Start timer. */
+  polybench_start_instruments;
+  printf("%d %d %d %d\n",indata[1],indata[1001],indata[2222],indata[3211]);
+  /* Run kernel. */
+  kernel_2mm (indata);
 
   /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
-//  printf("%d %d %d %d\n",indata[1],indata[1001],indata[2222],indata[3211]);
+
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
   polybench_prevent_dce(print_array(ni, nl,  D));
-
+  print_array(ni, nl,  D);
+	printf("%d %d %d %d\n",indata[1],indata[1001],indata[2222],indata[3211]);
   /* Be clean. *//*
   POLYBENCH_FREE_ARRAY(tmp);
   POLYBENCH_FREE_ARRAY(A);
   POLYBENCH_FREE_ARRAY(B);
   POLYBENCH_FREE_ARRAY(C);
   POLYBENCH_FREE_ARRAY(D);*/
-  p0[8]=0;
+
   return 0;
 }

@@ -152,6 +152,7 @@ int main(int argc, char** argv)
 	p0[2] = (unsigned long long)indata;//WriteBase
 	p0[3] = getpid();//CurrentThreadID
 	p0[4] = NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2;
+  printf("\n\n\n\n %lu \n\n\n\n\n\n", NI*NJ+NI*NK+NK*NJ+NJ*NL+NI*NL+2);
 	p0[5] = 4;//MemorySize
 	p0[7] = 0;//Terminat
 	//printf("22222");

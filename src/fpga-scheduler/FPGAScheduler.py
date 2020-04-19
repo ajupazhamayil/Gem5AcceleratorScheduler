@@ -5,4 +5,5 @@ class FPGAScheduler(SimObject):
     type = 'FPGAScheduler'
     cxx_header = "fpga-scheduler/fpgascheduler.hh"
 
-    time_to_process = Param.Latency("0us", "inProcTime+sorting+outProcTime")
+    # time_to_process = Param.Latency("0us", "inProcTime+sorting+outProcTime")
+    policy = Param.Int(0, "policy selector, 0 means FCFS")
