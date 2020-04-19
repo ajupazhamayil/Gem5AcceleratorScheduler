@@ -38,16 +38,16 @@ numThreads = 1
 
 process1 = LiveProcess()
 process1.pid = 1100;
-process1.cmd = ['tests/test-progs/polybench-c-4.2/2mm1']
-# 'tests/test-progs/polybench-c-4.2/2mm1-fpga']
-
+process1.cmd = ['tests/test-progs/bbsort2']
 process2 = LiveProcess()
-process2.pid = 1101;
-process2.cmd = ['tests/test-progs/polybench-c-4.2/2mm2']
-
+process2.pid = 1102;
+process2.cmd = ['tests/test-progs/bbsort3']
 process3 = LiveProcess()
 process3.pid = 1103;
-process3.cmd = ['tests/test-progs/polybench-c-4.2/2mm3']
+process3.cmd = ['tests/test-progs/bbsort0']
+process4 = LiveProcess()
+process4.pid = 1104;
+process4.cmd = ['tests/test-progs/bbsort1']
 
 (CPUClass, test_mem_mode, FutureClass) = Simulation.setCPUClass(options)
 CPUClass.numThreads = numThreads
@@ -60,7 +60,12 @@ system = System(cpu = [DerivO3CPU() for i in xrange(np)],
                 cache_line_size = 64)
 
 system.fpga = [FpgaCPU() for i in xrange(options.num_fpgas)]
-system.fpga[0].scheduler_object = FPGAScheduler(time_to_process = '1ps')
+system.fpga[0].scheduler_object = FPGAScheduler(policy = 1)
+# Assign the hello object to the fpga
+# time_to_process = Time to process one process 
+# (inProcTime+sorting+outProcTime)
+# system.fpga[0].Reconfigurable = 1
+# system.fpga[0].Reconfiguration_time = "3us"
 system.voltage_domain = VoltageDomain(voltage = options.sys_voltage)
 system.clk_domain = SrcClockDomain(clock =  options.sys_clock,
                              voltage_domain = system.voltage_domain)
@@ -69,25 +74,30 @@ system.cpu_clk_domain = SrcClockDomain(clock = options.cpu_clock,
                             voltage_domain =  system.cpu_voltage_domain)
 
 for cpu in system.cpu:
-    cpu.clk_domain = SrcClockDomain(clock = options.cpu_clock,
-                            voltage_domain =  system.cpu_voltage_domain)
+    cpu.clk_domain = system.cpu_clk_domain
 
 system.fpga[0].clk_domain = SrcClockDomain(clock = options.fpga_clock)
 system.fpga[0].clk_domain.voltage_domain = VoltageDomain()
 system.fpga[0].fpga_bus_addr = 1073741824*2 
 system.fpga[0].size_control_fpga = 29*8
-system.fpga[0].ModuleName = '2mm/obj_dir/Vour'
+system.fpga[0].ModuleName = 'bbsort/obj_dir/Vour'
 
 system.cpu[0].workload = process1
 system.cpu[0].createThreads()
 
 if np>1:
-    system.cpu[1].workload = process2
-    system.cpu[1].createThreads()
+	system.cpu[1].workload = process2
+	system.cpu[1].createThreads()
+
 
 if np>2:
-    system.cpu[2].workload = process3
-    system.cpu[2].createThreads()
+	system.cpu[2].workload = process3
+	system.cpu[2].createThreads()
+
+
+if np>3:
+	system.cpu[3].workload = process4
+	system.cpu[3].createThreads()
 
 system.piobus = IOXBar()
 

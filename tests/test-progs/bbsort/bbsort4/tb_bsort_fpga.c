@@ -11,14 +11,15 @@ unsigned long long* p0;
 
 int main()
 {
-   int number_array[20] = {1,2,200,10,34,65,23,78,79,11,23,55,123,1001,91,11221,1,7,203022,12};
+	int n = 25;
+   int number_array[n] = {1,2,200,10,34,65,23,78,79,11,23,55,123,1001,91,11221,1,7,203020,12,
+   2028,2010,201,2222,11111};
    int i;
    printf("------Original Array-------\n");
-   for(i=0; i<20; i++)
+   for(i=0; i<n; i++)
    {
 	 printf("%d \n", number_array[i]);
 	}
-   int m=20; int n=20; int a;
 
 	p0 =(unsigned long long *) new((unsigned long long *)0xc0000000) unsigned long long[10];//Contro Port
 	/* old method of waiting for FPGA
@@ -32,7 +33,7 @@ int main()
 		// the simulation from this error.
 	} */
 	// new method after implementing TaskHashes queue in fpga
-	uint32_t size = 40;
+	uint32_t size = n;
 	uint32_t pid = getpid()*getpid();
 	uint64_t r =0;
 	r=r| pid;
@@ -46,7 +47,7 @@ int main()
 	p0[1] = (unsigned long long)number_array;//ReadBase
 	p0[2] = (unsigned long long)number_array;//WriteBase
 	p0[3] = getpid();//CurrentThreadID
-	p0[4] = 20;//Memory Range
+	p0[4] = n;//Memory Range
 	p0[5] = 4;//MemorySize
 	p0[7] = 0;//Terminat
 	//printf("22222");
@@ -57,7 +58,7 @@ int main()
 
  //  a = bubblesort(number_array,m , n);
    printf("------Sorted Array-------\n");
-   for(i=0; i<20; i++)
+   for(i=0; i<n; i++)
    {
     printf("%d \n", number_array[i]);
    }
