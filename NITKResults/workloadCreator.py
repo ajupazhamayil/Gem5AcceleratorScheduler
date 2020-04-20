@@ -47,12 +47,12 @@ with open(temp, "w") as f:
             continue
 
         if "process1.cmd" in line:
-            f.write("process1.cmd = ['{}/{}{}']\n".format(polybench, file_name, np-2))
+            f.write("process1.cmd = ['{}/{}{}']\n".format(polybench, file_name, 0))
             for p in range(2,np+1):
                 f.write("\
 process{} = LiveProcess()\n\
 process{}.pid = 110{};\n\
-process{}.cmd = ['{}/{}{}']\n".format(p,p,p,p, polybench, file_name, (p+1)%np))
+process{}.cmd = ['{}/{}{}']\n".format(p,p,p,p, polybench, file_name, p-1))
             continue
         
         f.write(line)

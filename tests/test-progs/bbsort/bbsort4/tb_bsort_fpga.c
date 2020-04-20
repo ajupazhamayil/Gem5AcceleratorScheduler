@@ -12,8 +12,8 @@ unsigned long long* p0;
 int main()
 {
 	int n = 25;
-   int number_array[n] = {1,2,200,10,34,65,23,78,79,11,23,55,123,1001,91,11221,1,7,203020,12,
-   2028,2010,201,2222,11111};
+   int number_array[n+3] = {1,2,200,10,34,65,23,78,79,11,23,55,123,1001,91,11221,1,7,203020,12,
+   2028,2010};
    int i;
    printf("------Original Array-------\n");
    for(i=0; i<n; i++)
@@ -47,7 +47,7 @@ int main()
 	p0[1] = (unsigned long long)number_array;//ReadBase
 	p0[2] = (unsigned long long)number_array;//WriteBase
 	p0[3] = getpid();//CurrentThreadID
-	p0[4] = n;//Memory Range
+	p0[4] = 31;//Memory Range
 	p0[5] = 4;//MemorySize
 	p0[7] = 0;//Terminat
 	//printf("22222");
