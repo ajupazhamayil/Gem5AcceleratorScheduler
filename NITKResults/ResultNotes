@@ -1,0 +1,52 @@
+Memory Read (function calls in fpgacpu.cc)
+Fetch -> initiateMemRead -> finishTranslation -> sendData -> handleReadPacket(mem system takes ownership of the packet and respond it after the completion of the read) -> DcachePort::recvTimingResp -> completeDataAccess(makes bit_read/write-Ready=1 so that fpga can resume)
+
+
+
+TLB is redirecting the 0xc00 to particular physical address mentioned in the config file
+`
+
+# fpga's physical address starting space
+system.fpga[1].fpga_bus_addr = 1073741824*2 + 30*8
+# size of physical address(devided into page size)
+system.fpga[1].size_control_fpga = 60*8
+
+what are SPM good things like less area, less energy but sharing cache is much better!
+
+
+Note that in the experiments
+of this subsection, the CPU and FPGA processing are depen-
+dent on each other so that one will wait when the other is
+processing. The results of experiments are shown in Fig. 8.
+The results have been normalized to the execution time based
+on hierarchy (c).
+According to the results, for those applications whose data
+fit in the size of SPM and L1 cache, like 2mm, floyd and
+nussinov, the performance of hierarchy (a) and hierarchy (b)
+are very close, since most accesses in these applications are
+handled by SPM and L1 cache, latency of which are similar.
+
+
+However, industry has started to provide
+developers with coherent cache interface in products [1] [12].
+
+CPU and FPGA share same virtual address space.. In other words, CPU can share TLB and page table
+with FPGA as the implemention of the cache coherent inter-
+face in Power 8. Taking CAPI (coherent accelerator processor
+interface), proposed by IBM [7] as an example, in the design
+of CAPI, Power Service Layer, an IBM-supplied IP core
+contains a MMU and TLB. This MMU handles the address
+translation for accelerators. When it comes to memory access
+by the accelerator, it just becomes another thread of the
+application. Therefore, the accelerator can use an unmodified
+virtual address with full access to the CPU thread’s address
+space, and moreover, utilize the CPU’s page tables directly
+with page faults handled by system software. This solution
+reduces the effort of programming and frees the accelerator
+to do the intensive computation directly on the data it is
+assigned to. We modify the existing TLB model in gem5
+to implement this solution. When FPGA accelerator accesses
+memory via virtual address, the interface of FPGA accelerator
+will use the TLB of the corresponding thread which occupies
+the FPGA accelerator, to translate the virtual address into
+physical address.

@@ -12,7 +12,7 @@ unsigned long long* p0;
 int main()
 {
 	int n = 10;
-   int number_array[n+10] = {1,2,200,10,34,65,23,78,79,199};
+   int number_array[n] = {1,2,200,10,34,65,23,78,79,199};
    int i;
    printf("------Original Array-------\n");
    for(i=0; i<n; i++)

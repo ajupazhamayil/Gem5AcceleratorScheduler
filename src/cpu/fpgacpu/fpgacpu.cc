@@ -74,7 +74,7 @@ void FpgaCPU::createShare()
         fprintf(stderr, "shmat failed\n");
         exit(EXIT_FAILURE);
     }
-    printf("Memory attached at %llX\n", (unsigned long long)shm);
+    printf("Memory attached at (fpgacpu.cc)%llX\n", (unsigned long long)shm);
 }
 
 void FpgaCPU::deleteShare()
@@ -598,6 +598,7 @@ FpgaCPU::initiateMemRead(Addr addr, unsigned size,
             new WholeTranslationState(req, new uint8_t[size], NULL, mode);
         DataTranslation<FpgaCPU *> *translation
             = new DataTranslation<FpgaCPU *>(this, state);
+        // It calls the FpgaCPU::finishTranslation internally to finish the translation.
         CurrentTC->getDTBPtr()->translateTiming(req, CurrentTC, translation, mode);
     }
 
@@ -854,7 +855,7 @@ FpgaCPU::fetch()  //FPGACPU-special==========================actually FPGA has n
 	inputArray[bit_ReadReady] = 0;
 	inputArray[bit_WriteReady] = 0;
 	//if (tmp) printf("FPGA CLK\n");
-	//if (ReadEnable) printf("detect read %lu\n",outputArray[bit_ReadAddr]);
+	//if (ReadEnable) printf("detect read %lu\n",outputArray[bit_ReadEnableReadAddr]);
 	
     if (((ReadEnable && (outputArray[bit_FinishRead] || edge_RENA || (Protocol_shakehand&&ReadReady))) || readFault)&&already_reset)
     {
@@ -1340,6 +1341,8 @@ FpgaCPU::recvAtomic(PacketPtr pkt)
     // We are finding the register number by dividing the offset of array by 8
     // because long long is 8 byte (address will be in bytes)
 	Addr offset = (pkt->getAddr() - ControlAddr)>>3;
+    // DPRINTF(Accel, "\n pkt addr is %lu  and controlAddrfromconfig is %ul \n\n\n", \
+    pkt->getAddr(), ControlAddr);
 	uint64_t reg = offset;
 	uint64_t val = htog(getFPGAReg(reg));
 	if (pkt->isRead())
