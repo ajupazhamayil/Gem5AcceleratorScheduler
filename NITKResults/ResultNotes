@@ -1,3 +1,11 @@
+We get the recvAtomic call when it set to fpga_bus_addr is bcz the getAddrRanges gives that as the range list to the crossbar in the ruby system (following commands are helpful for that:
+
+system.piobus = IOXBar()
+Ruby.create_system(options, False, system, system.piobus)
+system.fpga[i].control_port = system.piobus.master
+)
+
+
 Memory Read (function calls in fpgacpu.cc)
 Fetch -> initiateMemRead -> finishTranslation -> sendData -> handleReadPacket(mem system takes ownership of the packet and respond it after the completion of the read) -> DcachePort::recvTimingResp -> completeDataAccess(makes bit_read/write-Ready=1 so that fpga can resume)
 
