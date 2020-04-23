@@ -6,12 +6,15 @@
  *   Tomofumi Yuki <tomofumi.yuki.fr>
  *
  * Web address: http://polybench.sourceforge.net
+
+
+
+
  */
-#ifndef _NUSSINOV_H
-# define _NUSSINOV_H
+#ifndef _FLOYD_WARSHALL_H
+# define _FLOYD_WARSHALL_H
 
-#define MINI_DATASET
-
+#define MINIDATASET
 /* Default to LARGE_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(MEDIUM_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
 #  define MINI_DATASET
@@ -20,7 +23,7 @@
 # if !defined(N)
 /* Define sample dataset sizes. */
 #  ifdef MINI_DATASET
-#   define N 63
+#   define N 16
 #  endif
 
 #  ifdef SMALL_DATASET
@@ -32,11 +35,11 @@
 #  endif
 
 #  ifdef LARGE_DATASET
-#   define N 2500
+#   define N 2800
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
-#   define N 5500
+#   define N 5600
 #  endif
 
 
@@ -73,4 +76,4 @@
 #  define POW_FUN(x,y) pow(x,y)
 # endif
 
-#endif /* !_NUSSINOV_H */
+#endif /* !_FLOYD_WARSHALL_H */
