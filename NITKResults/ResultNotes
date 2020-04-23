@@ -1,3 +1,13 @@
+------------future work-----------------
+We can make use of the fetch time for the interrupt and resume works by the following steps:
+1. Take 2*Fetch as time to interrupt and copy back the scratchpad/cache.
+2. Initiate n FPGAs for n workloads!
+----------------------------------------
+
+
+From FPGA, requested address is virtualaddress, So when the request makes to the memory, the pid set for the request will be same as the cpu workload bcz fpga is trying to access the VAS of that workload only.
+
+
 We get the recvAtomic call when it set to fpga_bus_addr is bcz the getAddrRanges gives that as the range list to the crossbar in the ruby system (following commands are helpful for that:
 
 system.piobus = IOXBar()

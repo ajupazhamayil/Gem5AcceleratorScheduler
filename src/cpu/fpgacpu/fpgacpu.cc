@@ -1142,7 +1142,7 @@ FpgaCPU::completeDataAccess(PacketPtr pkt)
 void
 FpgaCPU::updateCycleCounts()
 {
-//cout << "updateCycleCounts" << curCycle() << endl;
+//cout << "((Aj)This is to update the total numCycles) updateCycleCounts" << curCycle() << endl;
     const Cycles delta(curCycle() - previousCycle);
     numCycles += delta;
     ppCycles->notify(delta);

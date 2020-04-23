@@ -38,7 +38,7 @@ numThreads = 1
 
 process1 = LiveProcess()
 process1.pid = 1100;
-process1.cmd = ['tests/test-progs/bbsort0']
+process1.cmd = ['tests/test-progs/bbsort2']
 process2 = LiveProcess()
 process2.pid = 1102;
 process2.cmd = ['tests/test-progs/bbsort1']
