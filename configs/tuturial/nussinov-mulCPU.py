@@ -38,16 +38,16 @@ numThreads = 1
 
 process1 = LiveProcess()
 process1.pid = 1100;
-process1.cmd = ['tests/test-progs/polybench-c-4.2/nussinov0']
+process1.cmd = ['tests/test-progs/polybench-c-4.2/nussinov3']
 process2 = LiveProcess()
 process2.pid = 1102;
-process2.cmd = ['tests/test-progs/polybench-c-4.2/nussinov1']
+process2.cmd = ['tests/test-progs/polybench-c-4.2/nussinov2']
 process3 = LiveProcess()
 process3.pid = 1103;
-process3.cmd = ['tests/test-progs/polybench-c-4.2/nussinov2']
+process3.cmd = ['tests/test-progs/polybench-c-4.2/nussinov1']
 process4 = LiveProcess()
 process4.pid = 1104;
-process4.cmd = ['tests/test-progs/polybench-c-4.2/nussinov3']
+process4.cmd = ['tests/test-progs/polybench-c-4.2/nussinov0']
 
 (CPUClass, test_mem_mode, FutureClass) = Simulation.setCPUClass(options)
 CPUClass.numThreads = numThreads
@@ -60,7 +60,7 @@ system = System(cpu = [DerivO3CPU() for i in xrange(np)],
                 cache_line_size = 64)
 
 system.fpga = [FpgaCPU() for i in xrange(options.num_fpgas)]
-system.fpga[0].scheduler_object = FPGAScheduler(policy = 1)
+system.fpga[0].scheduler_object = FPGAScheduler(policy = 2)
 system.voltage_domain = VoltageDomain(voltage = options.sys_voltage)
 system.clk_domain = SrcClockDomain(clock =  options.sys_clock,
                              voltage_domain = system.voltage_domain)

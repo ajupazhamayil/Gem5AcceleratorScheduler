@@ -115,11 +115,6 @@ int main()
 	int table[N+2][N+1];
   /* Variable declaration/allocation. */
    
-
-  /* Initialize array(s). */
-  init_array (table);
-  /* Start timer. */
-  polybench_start_instruments;
 		//printf("111111");
 // 	p0[0] = 0;
 //  p0[6]=0;
@@ -162,6 +157,9 @@ int main()
    int b[512*1024/4];
    int pp;
 
+  init_array (table);
+  polybench_start_instruments;
+
 	p0[6] = 0;//RunState
 	p0[6]=1;
  
@@ -176,7 +174,7 @@ int main()
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
 	
-  print_array(n, table);
+  // print_array(n, table);
 
   /* Be clean. */
  // POLYBENCH_FREE_ARRAY(seq);
