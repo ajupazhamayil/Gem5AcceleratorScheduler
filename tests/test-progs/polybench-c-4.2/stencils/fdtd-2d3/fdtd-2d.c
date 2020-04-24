@@ -19,9 +19,7 @@
 
 /* Include benchmark-specific header. */
 #include "fdtd-2d.h"
-#include <new>
-using namespace std;
-unsigned long long* p0;
+
 
 /* Array initialization. */
 static
@@ -131,50 +129,16 @@ int main(int argc, char** argv)
  // POLYBENCH_2D_ARRAY_DECL(hz,DATA_TYPE,NX,NY,nx,ny);
  // POLYBENCH_1D_ARRAY_DECL(_fict_,DATA_TYPE,TMAX,tmax);
   int ex[3*NX+1][NY];
-	p0 =(unsigned long long *) new((unsigned long long *)0xc0000000) unsigned long long[10];//Contro Port
-	//printf("111111");
-   /*  p0[1] = (unsigned long long)ex;//ReadBase
-	p0[2] = (unsigned long long)ex;//WriteBase
-	p0[0] = 81;	
-	p0[8] = 1;
-	p0[3] = 9;//CurrentThreadID
-	p0[4] = (3*NX+1)*NY;//Memory Range
-	p0[5] = 4;//MemorySize
-	p0[7] = 0;//Terminat
-  Initialize array(s). */
-
-  uint32_t size =NX+NY;
-  uint32_t pid = getpid()*getpid();
-  uint64_t r =0;
-  r=r|pid;
-  r=r<<32;
-  r=r|size;
-  p0[0] = r;
-  // p0[13] = 0;  
-  printf("p00=%lu      pid=%lu    what=%d\n",p0[0],getpid()*getpid(), (p0[0] == getpid()*getpid()) );
-  while(p0[0] != getpid()*getpid()); // Wait for FPGA
-  p0[8] = 1;// Try to occupy the FPGA
-  p0[1] = (unsigned long long)ex;//ReadBase
-  p0[2] = (unsigned long long)ex;//WriteBase
-  p0[3] = getpid();//CurrentThreadID
-  p0[4] = (3*NX+1)*NY;
-  printf("\n\n\n\n %lu \n\n\n\n\n\n", NX+NY);
-  p0[5] = 4;//MemorySize
-  p0[7] = 0;//Terminat
-
-
+  /* Initialize array(s). */
   init_array (tmax, nx, ny,(int (*)[NY])ex[0],(int (*)[NY])(&ex[NX]),(int (*)[NY])(&ex[2*NX]),
 	      (&ex[3*NX][0]));
 
   /* Start timer. */
   polybench_start_instruments;
-/*  int b[512*1024/4];
-  int pp;
-  for (pp=0;pp<512*1024/4;pp++)
-	b[pp]=pp;*/
+
   /* Run kernel. */
-  //kernel_fdtd_2d (ex);
-  p0[6]=0;p0[6]=1;while(p0[6]);
+  kernel_fdtd_2d (ex);
+
 
   /* Stop and print timer. */
   polybench_stop_instruments;
@@ -182,9 +146,10 @@ int main(int argc, char** argv)
 
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
- // polybench_prevent_dce(print_array(nx, ny ,(int (*)[NY])ex[0],(int (*)[NY])(&ex[NX]),(int (*)[NY])(&ex[2*NX])));
-
+  polybench_prevent_dce(print_array(nx, ny ,(int (*)[NY])ex[0],(int (*)[NY])(&ex[NX]),(int (*)[NY])(&ex[2*NX])));
+    int x;
+	scanf("%d\n",&x);
   /* Be clean. */
-  p0[8] = 0;
+
   return 0;
 }

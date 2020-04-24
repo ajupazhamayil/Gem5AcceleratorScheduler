@@ -10,11 +10,8 @@
 #ifndef _FDTD_2D_H
 # define _FDTD_2D_H
 
-#define MINI_DATASET
-/* Default to LARGE_DATASET. */
-# if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(MEDIUM_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
-#  define SMALL_DATASET
-# endif
+#define OUR_DATASET
+
 
 # if !defined(TMAX) && !defined(NX) && !defined(NY)
 /* Define sample dataset sizes. */

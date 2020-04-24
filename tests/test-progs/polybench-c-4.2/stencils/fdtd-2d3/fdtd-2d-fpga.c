@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
+#include<stdint.h>
 
 /* Include polybench common header. */
 #include "../../utilities/polybench.h"
