@@ -111,7 +111,7 @@ int n = N;
 int main()
 {
   /* Retrieve problem size. */
-  p0 =(unsigned long long *) new((unsigned long long *)0xffff00000000) unsigned long long[29];//Contro Port
+  p0 =(unsigned long long *) new((unsigned long long *)0xc0000000) unsigned long long[29];//Contro Port
 	int table[N+2][N+1];
   /* Variable declaration/allocation. */
    
@@ -181,7 +181,8 @@ int main()
   /* Be clean. */
  // POLYBENCH_FREE_ARRAY(seq);
  // POLYBENCH_FREE_ARRAY(table);
-
+  p0[8] = 0;
+  printf("releasing it\n\n\n\n");
   return 0;
 }
 

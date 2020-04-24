@@ -6,45 +6,48 @@
  *   Tomofumi Yuki <tomofumi.yuki.fr>
  *
  * Web address: http://polybench.sourceforge.net
-
-
-
-
  */
-#ifndef _FLOYD_WARSHALL_H
-# define _FLOYD_WARSHALL_H
+#ifndef _JACOBI_2D_H
+# define _JACOBI_2D_H
 
-#define MINIDATASET
+#define SMALL_DATASET
+
 /* Default to LARGE_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(MEDIUM_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
-#  define MINI_DATASET
+#  define SMALL_DATASET
 # endif
 
-# if !defined(N)
+# if !defined(TSTEPS) && !defined(N)
 /* Define sample dataset sizes. */
 #  ifdef MINI_DATASET
-#   define N 32
+#   define TSTEPS 20
+#   define N 30
 #  endif
 
 #  ifdef SMALL_DATASET
-#   define N 180
+#   define TSTEPS 40
+#   define N 90
 #  endif
 
 #  ifdef MEDIUM_DATASET
-#   define N 500
+#   define TSTEPS 100
+#   define N 250
 #  endif
 
 #  ifdef LARGE_DATASET
-#   define N 2800
+#   define TSTEPS 500
+#   define N 1300
 #  endif
 
 #  ifdef EXTRALARGE_DATASET
-#   define N 5600
+#   define TSTEPS 1000
+#   define N 2800
 #  endif
 
 
-#endif /* !(N) */
+#endif /* !(TSTEPS N) */
 
+# define _PB_TSTEPS POLYBENCH_LOOP_BOUND(TSTEPS,tsteps)
 # define _PB_N POLYBENCH_LOOP_BOUND(N,n)
 
 
@@ -76,4 +79,4 @@
 #  define POW_FUN(x,y) pow(x,y)
 # endif
 
-#endif /* !_FLOYD_WARSHALL_H */
+#endif /* !_JACOBI_2D_H */
