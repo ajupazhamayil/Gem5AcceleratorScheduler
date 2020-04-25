@@ -10,7 +10,6 @@
 #ifndef _HEAT_3D_H
 # define _HEAT_3D_H
 
-#define MINI_DATASET
 /* Default to LARGE_DATASET. */
 # if !defined(MINI_DATASET) && !defined(SMALL_DATASET) && !defined(MEDIUM_DATASET) && !defined(LARGE_DATASET) && !defined(EXTRALARGE_DATASET)
 #  define SMALL_DATASET
@@ -24,13 +23,13 @@
 #  endif
 
 #  ifdef SMALL_DATASET
-#   define TSTEPS 20
-#   define N 30
+#   define TSTEPS 30
+#   define N 40
 #  endif
 
 #  ifdef MEDIUM_DATASET
 #   define TSTEPS 100
-#   define N 40
+#   define N 50
 #  endif
 
 #  ifdef LARGE_DATASET

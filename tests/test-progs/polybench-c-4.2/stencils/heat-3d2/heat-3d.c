@@ -13,16 +13,13 @@
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
-#include<stdint.h>
 
 /* Include polybench common header. */
 #include "../../utilities/polybench.h"
 
 /* Include benchmark-specific header. */
 #include "heat-3d.h"
-#include<new>
-using namespace std;
-unsigned long long *p0;
+
 
 /* Array initialization. */
 static
@@ -96,7 +93,7 @@ void kernel_heat_3d(
 
 }
 
-int A[2*N][N][N];
+
 int main(int argc, char** argv)
 {
   /* Retrieve problem size. */
@@ -104,56 +101,27 @@ int main(int argc, char** argv)
   int tsteps = TSTEPS;
 
   /* Variable declaration/allocation. */
-  
+  int A[2*N][N][N];
 
-	p0 =(unsigned long long *) new((unsigned long long *)0xc0000000) unsigned long long[10];//Contro Port
-	/*printf("111111");
-    p0[1] = (unsigned long long)A;//ReadBase
-	p0[2] = (unsigned long long)A;//WriteBase
-	p0[0] = 81;	
-	p0[8] = 1;
-	p0[3] = 9;//CurrentThreadID
-	p0[4] = 2*N*N*N;//Memory Range
-	p0[5] = 4;//MemorySize
-	p0[7] = 0;//Terminat
-  /*Initialize array(s). */
-  uint32_t size =N;
-	uint32_t pid = getpid()*getpid();
-	uint64_t r =0;
-	r=r|pid;
-	r=r<<32;
-	r=r|size;
-	p0[0] = r;	
-	printf("p00=%lu      pid=%lu  what=%d\n",p0[0],getpid()*getpid(), (p0[0] == getpid()*getpid()) );
-	while(p0[0] != getpid()*getpid()); // Wait for FPGA
-	p0[8] = 1;// Try to occupy the FPGA
-	p0[1] = (unsigned long long)A;//ReadBase
-	p0[2] = (unsigned long long)A;//WriteBase
-	p0[3] = getpid();//CurrentThreadID
-	p0[4] = 2*N*N*N;
-  printf("\n\n\n\n %lu \n\n\n\n\n\n", N);
-	p0[5] = 4;//MemorySize
-	p0[7] = 0;//Terminat
+
+  /* Initialize array(s). */
   init_array (n, A, &A[N]);
 
   /* Start timer. */
   polybench_start_instruments;
-  /*int b[512*1024/4];
-  int pp;
-  for (pp=0;pp<512*1024/4;pp++)
-	b[pp]=pp;*/
+
   /* Run kernel. */
-  //kernel_heat_3d (A);
-  p0[6]=0;p0[6]=1;while(p0[6]);
+  kernel_heat_3d (A);
+
   /* Stop and print timer. */
   polybench_stop_instruments;
   polybench_print_instruments;
 
   /* Prevent dead-code elimination. All live-out data must be printed
      by the function call in argument. */
- // polybench_prevent_dce(print_array(n, A));
+  polybench_prevent_dce(print_array(n, A));
 
   /* Be clean. */
-  p0[8]=0;
+
   return 0;
 }
